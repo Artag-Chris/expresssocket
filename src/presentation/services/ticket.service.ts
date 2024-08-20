@@ -1,7 +1,16 @@
 import { UuuiAdapter } from "../../config/uuid.adapter";
 import { Ticket } from "../../domain/interfaces/ticket";
+import{ WssService } from "./wss.service";
+
+
+
 
 export class TicketService {
+
+constructor(
+  private readonly wssService = WssService.instance,
+) {}
+
   public readonly tickets: Ticket[] = [
     { id: UuuiAdapter.v4(), number: 1, createdAt: new Date(), done: false },
     { id: UuuiAdapter.v4(), number: 2, createdAt: new Date(), done: false },
@@ -34,8 +43,13 @@ return this,this.workingOnTicket.slice(0,4);
       handleAtDesk: undefined,
       handleAt: undefined,
     };
-    this.tickets.push(ticket);
+   
     //TODO: ponerlo con el WS
+
+
+    this.tickets.push(ticket);
+     this.onTicketNumberChanged();
+
     return ticket;
   }
 
@@ -65,4 +79,10 @@ return this,this.workingOnTicket.slice(0,4);
     });
     return { status: `ok` };
   }
+
+private onTicketNumberChanged(){
+  this.wssService.sendMessage('on-ticket-count-changed', this.pendingTickets.length);
+}
+
+
 }

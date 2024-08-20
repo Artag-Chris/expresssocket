@@ -1,5 +1,6 @@
 import express, { Router } from "express";
 import path from "path";
+import cors from "cors";
 
 interface Options {
   port: number;
@@ -23,7 +24,8 @@ export class Server {
   }
 
   private configure() {
-    //* Middlewares
+    //* Middlewares aqui se configuran los middlewares del server
+    this.app.use(cors());
     this.app.use(express.json()); // raw
     this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
 

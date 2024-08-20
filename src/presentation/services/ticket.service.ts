@@ -61,7 +61,7 @@ return this,this.workingOnTicket.slice(0,4);
     ticket.handleAt = new Date();
 
     this.workingOnTicket.unshift({...ticket});
-
+    this.onTicketNumberChanged();
     //TODO: ponerlo con el WS
 
     return { status: `ok`, ticket };

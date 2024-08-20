@@ -18,6 +18,9 @@ const deskNumber =searchParams.get("escritorio");
 deskHeader.innerText= `Escritorio ${deskNumber}`;
 
 async function getTicket() {
+    
+    await finishTicket();
+
   const {status, ticket, message} = await fetch(`http://localhost:3000/api/tickets/draw/${deskNumber}`)
   .then(resp=>resp.json());
 
@@ -48,6 +51,21 @@ function checkTicketCount(currentCount=0){
     lblPending.innerHTML=currentCount;
 }  
 
+async function finishTicket() {
+    if (!workingTicket) return;
+
+    const {status, message} = await fetch(`http://localhost:3000/api/tickets/done/${workingTicket.id}`
+        ,{method:"PUT"})
+    .then(resp=>resp.json());
+
+    if (status==="ok"){
+        workingTicket=null;
+        lblCurrentTicket.innerText="Nadie";
+        
+    }
+
+}
+
 function connectToWebSockets() {
 
     const socket = new WebSocket('ws://localhost:3000/ws');
@@ -77,7 +95,7 @@ function connectToWebSockets() {
   
   //listerners
   btnDraw.addEventListener("click",getTicket);
-  
+  btnDone.addEventListener("click",finishTicket);
   //init
   loadInitianCount();
   connectToWebSockets();

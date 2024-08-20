@@ -11,7 +11,7 @@ constructor(
   private readonly wssService = WssService.instance,
 ) {}
 
-  public readonly tickets: Ticket[] = [
+  public tickets: Ticket[] = [
     { id: UuuiAdapter.v4(), number: 1, createdAt: new Date(), done: false },
     { id: UuuiAdapter.v4(), number: 2, createdAt: new Date(), done: false },
     { id: UuuiAdapter.v4(), number: 3, createdAt: new Date(), done: false },
@@ -61,8 +61,10 @@ return this,this.workingOnTicket.slice(0,4);
     ticket.handleAt = new Date();
 
     this.workingOnTicket.unshift({...ticket});
+    //aqui estan las notificaciones del ws
     this.onTicketNumberChanged();
-    //TODO: ponerlo con el WS
+    this.onWorkingOnChanged();
+
 
     return { status: `ok`, ticket };
   }
@@ -71,7 +73,7 @@ return this,this.workingOnTicket.slice(0,4);
     const ticket = this.tickets.find((t) => t.id === id);
     if (!ticket) return { error: "Ticket no encontrado" };
 
-    this.tickets.map((ticket) => {
+   this.tickets =this.tickets.map((ticket) => {
       if (ticket.id === id) {
         ticket.done = true;
       }
@@ -82,6 +84,10 @@ return this,this.workingOnTicket.slice(0,4);
 
 private onTicketNumberChanged(){
   this.wssService.sendMessage('on-ticket-count-changed', this.pendingTickets.length);
+}
+
+private onWorkingOnChanged(){
+  this.wssService.sendMessage('on-working-changed', this.lastWorkingOnTickets);
 }
 
 
